@@ -79,7 +79,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:5000/tasks');
+        const response = await fetch('https://global-task-suite-api.azurewebsites.net/tasks');
         const data = await response.json();
 
         const groupedTasks = {

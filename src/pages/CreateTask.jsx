@@ -82,7 +82,7 @@ const Createtask = () => {
     // Fetch users from API
     const fetchUsers = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:5000/user');
+        const response = await fetch('https://global-task-suite-api.azurewebsites.net/user');
         const data = await response.json();
         setUsers(data);
       } catch (error) {
