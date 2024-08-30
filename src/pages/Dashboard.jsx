@@ -50,7 +50,7 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
+  // color: 'inherit',
   '& .MuiInputBase-input': {
     padding: theme.spacing(1, 1, 1, 0),
     paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
@@ -74,6 +74,7 @@ const TaskCard = styled(Card)(({ theme }) => ({
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState({ todo: [], inProgress: [], done: [] });
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -97,6 +98,31 @@ const Dashboard = () => {
     fetchTasks();
   }, []);
 
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value.toLowerCase());
+  };
+
+  const filteredTasks = {
+    todo: tasks.todo.filter(task => 
+      task.TaskName.toLowerCase().includes(searchQuery) || 
+      task.TaskDesc.toLowerCase().includes(searchQuery) ||
+      task.AssignedTo?.toLowerCase().includes(searchQuery) ||
+      task.CreatedBy.toLowerCase().includes(searchQuery)
+    ),
+    inProgress: tasks.inProgress.filter(task => 
+      task.TaskName.toLowerCase().includes(searchQuery) || 
+      task.TaskDesc.toLowerCase().includes(searchQuery) ||
+      task.AssignedTo?.toLowerCase().includes(searchQuery) ||
+      task.CreatedBy.toLowerCase().includes(searchQuery)
+    ),
+    done: tasks.done.filter(task => 
+      task.TaskName.toLowerCase().includes(searchQuery) || 
+      task.TaskDesc.toLowerCase().includes(searchQuery) ||
+      task.AssignedTo?.toLowerCase().includes(searchQuery) ||
+      task.CreatedBy.toLowerCase().includes(searchQuery)
+    )
+  };
+
   const handleLogout = () => {
     console.log('Logout');
     navigate('/');
@@ -113,6 +139,8 @@ const Dashboard = () => {
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
+              value={searchQuery}
+              onChange={handleSearchChange}
             />
           </Search>
           <div style={{ flexGrow: 1 }} />
@@ -134,7 +162,7 @@ const Dashboard = () => {
             {/* To Do Tasks */}
             <Grid item xs={12} md={4}>
               <Typography variant="h6" gutterBottom color="lightslategray">To Do</Typography>
-              {tasks.todo.map((task, index) => (
+              {filteredTasks.todo.map((task, index) => (
                 <TaskCard key={index}>
                   <CardContent>
                     <Typography variant="caption" color="textSecondary">
@@ -172,7 +200,7 @@ const Dashboard = () => {
             {/* In Progress Tasks */}
             <Grid item xs={12} md={4}>
               <Typography variant="h6" gutterBottom color="darkgoldenrod">In Progress</Typography>
-              {tasks.inProgress.map((task, index) => (
+              {filteredTasks.inProgress.map((task, index) => (
                 <TaskCard key={index}>
                   <CardContent>
                     <Typography variant="caption" color="textSecondary">
@@ -210,7 +238,7 @@ const Dashboard = () => {
             {/* Done Tasks */}
             <Grid item xs={12} md={4}>
               <Typography variant="h6" gutterBottom color="forestgreen">Completed</Typography>
-              {tasks.done.map((task, index) => (
+              {filteredTasks.done.map((task, index) => (
                 <TaskCard key={index}>
                   <CardContent>
                     <Typography variant="caption" color="textSecondary">
@@ -259,7 +287,3 @@ const AvatarGroup = () => (
 );
 
 export default Dashboard;
-
-
-
-
