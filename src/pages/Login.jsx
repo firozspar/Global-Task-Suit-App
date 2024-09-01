@@ -4,6 +4,7 @@ import { styled } from '@mui/system';
 import { MsalProvider, useMsal, AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/msal-react";
 import { useNavigate } from 'react-router-dom';
 import {msalInstance} from "../authConfig";
+import Dashboard from './Dashboard';
 
 const StyledContainer = styled(Container)({
   display: 'flex',
@@ -118,6 +119,8 @@ const Login = () => {
             <AuthenticatedTemplate>
               <h1>  Welcome -</h1>
               <LogoutButton />
+              <Dashboard/>
+
             </AuthenticatedTemplate>
             <UnauthenticatedTemplate>
               <LoginButton />

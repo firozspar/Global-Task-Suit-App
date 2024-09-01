@@ -153,7 +153,7 @@ const Createtask = () => {
           </Search>
           <div style={{ flexGrow: 1 }} />
           <IconButton color="inherit">
-            <Avatar alt="Profile Picture" src="https://th.bing.com/th/id/OIP.2i5UaEHaQM3PYAYXQyM1AAAAAA?w=184&h=184&c=7&r=0&o=5&dpr=1.5&pid=1.7" />
+            <Avatar alt="Profile Picture" src="https://www.dgvaishnavcollege.edu.in/dgvaishnav-c/uploads/2021/01/dummy-profile-pic.jpg.webp" />
           </IconButton>
         </Toolbar>
       </AppBarStyled>
