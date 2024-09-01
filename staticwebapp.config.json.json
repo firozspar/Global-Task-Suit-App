@@ -1,0 +1,19 @@
+{
+  "auth": {
+    "identityProviders": {
+      "azureActiveDirectory": {
+        "registration": {
+          "openIdIssuer": "https://login.microsoftonline.com/48342a33-25ad-4d79-b854-4d66877e41c1/v2.0",
+          "clientIdSettingName": "AZURE_CLIENT_ID", 
+          "clientSecretSettingName": "AZURE_CLIENT_SECRET"
+        },
+        "login": {
+          "loginParameters": [
+            "response_type=code",
+            "scope=openid profile offline_access"
+          ]
+        }
+      }
+    }
+  }
+}
