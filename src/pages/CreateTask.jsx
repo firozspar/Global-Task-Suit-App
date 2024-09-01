@@ -109,7 +109,7 @@ const Createtask = () => {
     
     console.log('Data being sent to API:', taskData);
     try {
-      const response = await fetch('http://127.0.0.1:5000/createTask', {
+      const response = await fetch('https://global-task-suite-api.azurewebsites.net/createTask', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
