@@ -2,11 +2,12 @@ import { Drawer, List, ListItem, ListItemIcon, ListItemText, Divider } from '@mu
 import { Dashboard as DashboardIcon, Add as AddIcon, ExitToApp as LogoutIcon } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
+import { useMsal } from "@azure/msal-react";
 
 const drawerWidth = 240;
 
 const DrawerStyled = styled(Drawer)(({ theme = {} }) => ({
-  width: theme.drawer?.width || drawerWidth, // Use drawerWidth as a fallback
+  width: theme.drawer?.width || drawerWidth,
   flexShrink: 0,
   '& .MuiDrawer-paper': {
     width: theme.drawer?.width || drawerWidth,
@@ -18,7 +19,13 @@ const ToolbarStyled = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
-const LeftNavPanel = ({ onLogout }) => {
+const LeftNavPanel = () => {
+  const { instance } = useMsal();
+
+  const handleLogout = () => {
+    instance.logoutRedirect();
+  };
+
   return (
     <DrawerStyled variant="permanent">
       <ToolbarStyled />
@@ -34,7 +41,7 @@ const LeftNavPanel = ({ onLogout }) => {
       </List>
       <Divider />
       <List>
-        <ListItem onClick={onLogout}>
+        <ListItem button onClick={handleLogout}>
           <ListItemIcon><LogoutIcon /></ListItemIcon>
           <ListItemText primary="Log out" />
         </ListItem>
