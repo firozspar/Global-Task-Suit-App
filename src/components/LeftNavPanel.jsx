@@ -1,5 +1,6 @@
+import React from 'react';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
-import { Dashboard as DashboardIcon, Add as AddIcon, ExitToApp as LogoutIcon } from '@mui/icons-material';
+import { Dashboard as DashboardIcon, Add as AddIcon, ExitToApp as LogoutIcon, AccountCircle as AzurePortalIcon } from '@mui/icons-material';
 import { Link, useLocation } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { useMsal } from "@azure/msal-react";
@@ -34,6 +35,10 @@ const LeftNavPanel = () => {
     instance.logoutRedirect();
   };
 
+  const handleAzurePortalRedirect = () => {
+    window.open('https://portal.azure.com', '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <DrawerStyled variant="permanent">
       <ToolbarStyled />
@@ -54,6 +59,10 @@ const LeftNavPanel = () => {
           <ListItemIcon><AddIcon /></ListItemIcon>
           <ListItemText primary="Create Task" />
         </ListItemStyled>
+        {/* <ListItemStyled button onClick={handleAzurePortalRedirect}>
+          <ListItemIcon><AzurePortalIcon /></ListItemIcon>
+          <ListItemText primary="Azure Portal" />
+        </ListItemStyled> */}
       </List>
       <Divider />
       <List>

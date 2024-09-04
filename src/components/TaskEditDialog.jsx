@@ -13,8 +13,8 @@ const TaskEditDialog = ({ task, open, onClose, onSave }) => {
   const [openError, setOpenError] = useState(false);
 
   useEffect(() => {
-    setEditTask(task); // Updating editTask state when task prop changes
-    setAssignedUser(task?.AssignedTo || ''); // Updating assignedUser state when task prop changes
+    setEditTask(task);
+    setAssignedUser(task?.AssignedTo || '');
   }, [task]);
 
   useEffect(() => {
@@ -48,8 +48,6 @@ const TaskEditDialog = ({ task, open, onClose, onSave }) => {
       TaskId: taskId,
     };
 
-
-
     if (!taskId) {
       console.error('Task ID is undefined, unable to update task');
       return;
@@ -67,6 +65,11 @@ const TaskEditDialog = ({ task, open, onClose, onSave }) => {
 
       if (response.ok) {
         setOpenSuccess(true);
+        setTimeout(() => {
+          setOpenSuccess(false);
+          onClose();
+          window.location.reload();
+        }, 1500);
       } else {
         throw new Error('Failed to update task');
       }
@@ -80,7 +83,6 @@ const TaskEditDialog = ({ task, open, onClose, onSave }) => {
     setOpenSuccess(false);
     setOpenError(false);
   };
-
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>

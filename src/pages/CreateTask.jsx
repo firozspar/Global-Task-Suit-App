@@ -58,7 +58,7 @@ const CreateTask = () => {
       TaskDesc: description,
       DueDate: dueDate,
       AssignedTo: assignedUser,
-      CreatedBy: profileName, // Using the profile name here
+      CreatedBy: profileName,
       CreatedDate: currentDate,
       Status: 'To Do',
       TaskID: Math.floor(Math.random() * 1000) + 1,
@@ -76,6 +76,11 @@ const CreateTask = () => {
 
       if (response.ok) {
         setOpenSuccess(true);
+        setTimeout(()=>{
+          setOpenSuccess(false);
+          navigate('/dashboard');
+          window.location.reload();
+        }, 1500);
       } else {
         throw new Error('Failed to create task');
       }

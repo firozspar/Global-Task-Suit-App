@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Button, Container, Grid, Card, CardContent, Typography, IconButton, Dialog, DialogTitle, DialogContent, MenuItem, FormControl, Select, InputLabel, MenuItem as SelectMenuItem
+  Container, Grid, Card, CardContent, Typography, IconButton, Dialog, DialogTitle, DialogContent, Menu, MenuItem, Switch
 } from '@mui/material';
-import { MoreVert as MoreVertIcon } from '@mui/icons-material';
+import {
+  MoreVert as MoreVertIcon
+} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import LeftNavPanel from '../components/LeftNavPanel';
@@ -45,57 +47,44 @@ const TaskCard = styled(Card)(({ theme }) => ({
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState({ todo: [], inProgress: [], done: [] });
-  const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTask, setSelectedTask] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedUser, setSelectedUser] = useState('');
-  const navigate = useNavigate();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [filterCreatedByMe, setFilterCreatedByMe] = useState(false);
+  const [createdByToggle, setCreatedByToggle] = useState(false); // Toggle state for fetching tasks by CreatedBy
+  const navigate = useNavigate();
 
-  // Accessing profileName from Redux store
+  // Access profileName from Redux store
   const profileName = useSelector((state) => state.profile.name);
   console.log("Dashboard profileName from Header", profileName);
 
-  const fetchTasks = async () => {
-    try {
-      const response = await fetch('https://global-task-suite-api.azurewebsites.net/tasks');
-      const data = await response.json();
-      console.log("data ============", data);
-
-      const groupedTasks = {
-        todo: data.filter(task => task.Status === 'To Do' && task.AssignedTo?.toLowerCase() === profileName.toLowerCase()),
-        inProgress: data.filter(task => task.Status === 'InProgress' && task.AssignedTo?.toLowerCase() === profileName.toLowerCase()),
-        done: data.filter(task => task.Status === 'Completed' && task.AssignedTo?.toLowerCase() === profileName.toLowerCase())
-      };
-      setTasks(groupedTasks);
-    } catch (error) {
-      console.error('Error fetching tasks:', error);
-    }
-  };
-
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch('https://global-task-suite-api.azurewebsites.net/user');
-      const data = await response.json();
-      setUsers(data);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-    }
-  };
-
   useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const apiUrl = createdByToggle 
+          ? `https://global-task-suite-api.azurewebsites.net/tasks/createdBy/${profileName}`
+          : `https://global-task-suite-api.azurewebsites.net/tasks/assignedTo/${profileName}`;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        console.log("data ============", data);
+
+        const groupedTasks = {
+          todo: data.filter(task => task.Status === 'To Do'),
+          inProgress: data.filter(task => task.Status === 'InProgress'),
+          done: data.filter(task => task.Status === 'Completed')
+        };
+        setTasks(groupedTasks);
+
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
+      }
+    };
+
     fetchTasks();
-    fetchUsers();
-  }, [profileName]);
+  }, [profileName, createdByToggle]); // Refetch tasks when profileName or toggle state changes
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value.toLowerCase());
-  };
-
-  const handleUserChange = (event) => {
-    setSelectedUser(event.target.value);
   };
 
   const handleCardClick = (task) => {
@@ -110,61 +99,57 @@ const Dashboard = () => {
     setAnchorEl(null);
   };
 
-  const handleFilterCreatedByMe = () => {
-    setFilterCreatedByMe(!filterCreatedByMe);
-    fetchTasks();
-  };
-
-  const filteredTasks = {
-    todo: tasks.todo.filter(task =>
-      (selectedUser === '' || task.AssignedTo?.toLowerCase() === selectedUser.toLowerCase()) &&
-      (filterCreatedByMe ? task.CreatedBy.toLowerCase() === profileName.toLowerCase() : true) &&
-      (task.TaskName.toLowerCase().includes(searchQuery) ||
-        task.TaskDesc.toLowerCase().includes(searchQuery) ||
-        task.AssignedTo?.toLowerCase().includes(searchQuery) ||
-        task.CreatedBy.toLowerCase().includes(searchQuery))
-    ),
-    inProgress: tasks.inProgress.filter(task =>
-      (selectedUser === '' || task.AssignedTo?.toLowerCase() === selectedUser.toLowerCase()) &&
-      (filterCreatedByMe ? task.CreatedBy.toLowerCase() === profileName.toLowerCase() : true) &&
-      (task.TaskName.toLowerCase().includes(searchQuery) ||
-        task.TaskDesc.toLowerCase().includes(searchQuery) ||
-        task.AssignedTo?.toLowerCase().includes(searchQuery) ||
-        task.CreatedBy.toLowerCase().includes(searchQuery))
-    ),
-    done: tasks.done.filter(task =>
-      (selectedUser === '' || task.AssignedTo?.toLowerCase() === selectedUser.toLowerCase()) &&
-      (filterCreatedByMe ? task.CreatedBy.toLowerCase() === profileName.toLowerCase() : true) &&
-      (task.TaskName.toLowerCase().includes(searchQuery) ||
-        task.TaskDesc.toLowerCase().includes(searchQuery) ||
-        task.AssignedTo?.toLowerCase().includes(searchQuery) ||
-        task.CreatedBy.toLowerCase().includes(searchQuery))
-    )
-  };
-
   const handleLogout = () => {
     console.log('Logout');
     navigate('/');
   };
 
-  const handleUpdateTask = () => {
-    setEditDialogOpen(true);
+  const handleToggleChange = (event) => {
+    setCreatedByToggle(event.target.checked);
   };
 
+  const filteredTasks = {
+    todo: tasks.todo.filter(task => 
+      task.TaskName.toLowerCase().includes(searchQuery) || 
+      task.TaskDesc.toLowerCase().includes(searchQuery) ||
+      task.AssignedTo?.toLowerCase().includes(searchQuery) ||
+      task.CreatedBy.toLowerCase().includes(searchQuery)
+    ),
+    inProgress: tasks.inProgress.filter(task => 
+      task.TaskName.toLowerCase().includes(searchQuery) || 
+      task.TaskDesc.toLowerCase().includes(searchQuery) ||
+      task.AssignedTo?.toLowerCase().includes(searchQuery) ||
+      task.CreatedBy.toLowerCase().includes(searchQuery)
+    ),
+    done: tasks.done.filter(task => 
+      task.TaskName.toLowerCase().includes(searchQuery) || 
+      task.TaskDesc.toLowerCase().includes(searchQuery) ||
+      task.AssignedTo?.toLowerCase().includes(searchQuery) ||
+      task.CreatedBy.toLowerCase().includes(searchQuery)
+    )
+  };
+
+  // Handle opening the edit dialog
+  const handleUpdateTask = () => {
+    setEditDialogOpen(true); // Open the edit dialog
+  };
+
+  // Handle closing the dialogs
   const handleCloseDialog = () => {
     setSelectedTask(null);
     setEditDialogOpen(false);
   };
 
+  // Handle saving the updated task
   const handleSaveTask = (updatedTask) => {
+    // Update the task in your state or send it to your backend
     console.log('Updated Task:', updatedTask);
-    setSelectedTask(updatedTask);
+    setSelectedTask(updatedTask); // Update the selected task with edited data
   };
 
   return (
     <MainContainer>
       <Header searchQuery={searchQuery} handleSearchChange={handleSearchChange} />
-
       <LeftNavPanel onLogout={handleLogout} />
 
       <Content>
@@ -173,22 +158,21 @@ const Dashboard = () => {
           <Typography variant="h4" gutterBottom>
             Task List
           </Typography>
-
-          <Button
-            variant={filterCreatedByMe ? 'contained' : 'outlined'}
-            color="primary"
-            onClick={handleFilterCreatedByMe}
-            style={{ margin: '20px 0' }}
-          >
-            {filterCreatedByMe ? 'Show All Tasks' : 'Show My Created Tasks'}
-          </Button>
+          
+          {/* Toggle switch for selecting tasks created by the user */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+            <Typography variant="subtitle1">Show My Created Tasks</Typography>
+            <Switch
+              checked={createdByToggle}
+              onChange={handleToggleChange}
+              color="primary"
+            />
+          </div>
 
           <Grid container spacing={3}>
             {['todo', 'inProgress', 'done'].map((status, index) => (
               <Grid item xs={12} md={4} key={index}>
-                <Typography variant="h6" gutterBottom color={getStatusColor(status)}>
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
-                </Typography>
+                <Typography variant="h6" gutterBottom color={getStatusColor(status)}>{status.charAt(0).toUpperCase() + status.slice(1)}</Typography>
                 {filteredTasks[status].map((task, index) => (
                   <TaskCard key={index} onClick={() => handleCardClick(task)}>
                     <CardContent>
@@ -219,46 +203,47 @@ const Dashboard = () => {
             ))}
           </Grid>
         </Container>
-
-        {/* Task Details Dialog */}
-        {selectedTask && (
-          <Dialog open={Boolean(selectedTask)} onClose={handleCloseDialog} maxWidth="md" fullWidth>
-            <DialogTitle>
-              <Typography sx={{ color: 'darkorange' }}>{selectedTask.TaskName}</Typography>
-              <IconButton
-                aria-label="close"
-                onClick={handleCloseDialog}
-                sx={{
-                  position: 'absolute',
-                  right: 8,
-                  top: 8,
-                  color: (theme) => theme.palette.grey[500],
-                }}
-              >
-                <CloseIcon />
-              </IconButton>
-            </DialogTitle>
-            <DialogContent>
-              <Typography variant="body1"><strong>Description:</strong> {selectedTask.TaskDesc}</Typography>
-              <Typography variant="body1"><strong>Assigned To:</strong> {selectedTask.AssignedTo || 'Unassigned'}</Typography>
-              <Typography variant="body1"><strong>Due Date:</strong> {selectedTask.DueDate}</Typography>
-              <Typography variant="body1"><strong>Status:</strong> {selectedTask.Status}</Typography>
-              <Typography variant="body1"><strong>Created By:</strong> {selectedTask.CreatedBy}</Typography>
-              <Typography variant="body1"><strong>Created Date:</strong> {selectedTask.CreatedDate}</Typography>
-              <Button variant="contained" color="primary" fullWidth sx={{ backgroundColor: '#7784EE' }} onClick={handleUpdateTask}> Edit Task </Button>
-            </DialogContent>
-          </Dialog>
-        )}
-        {/* Task Edit Dialog */}
-        {selectedTask && (
-          <TaskEditDialog
-            open={editDialogOpen}
-            onClose={handleCloseDialog}
-            task={selectedTask}
-            onSave={handleSaveTask}
-          />
-        )}
       </Content>
+
+      {/* Task Details Dialog */}
+      {selectedTask && (
+        <Dialog open={Boolean(selectedTask)} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+          <DialogTitle>
+            <Typography sx={{ color: 'darkorange' }}>{selectedTask.TaskName}</Typography>
+            <IconButton
+              aria-label="close"
+              onClick={handleCloseDialog}
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: 8,
+                color: (theme) => theme.palette.grey[500],
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </DialogTitle>
+          <DialogContent>
+            <Typography variant="body1"><strong>Description:</strong> {selectedTask.TaskDesc}</Typography>
+            <Typography variant="body1"><strong>Assigned To:</strong> {selectedTask.AssignedTo || 'Unassigned'}</Typography>
+            <Typography variant="body1"><strong>Due Date:</strong> {selectedTask.DueDate}</Typography>
+            <Typography variant="body1"><strong>Status:</strong> {selectedTask.Status}</Typography>
+            <Typography variant="body1"><strong>Created By:</strong> {selectedTask.CreatedBy}</Typography>
+            <Typography variant="body1"><strong>Created Date:</strong> {selectedTask.CreatedDate}</Typography>
+            <MenuItem variant="contained" color="primary" fullWidth sx={{ backgroundColor: '#7784EE' }} onClick={handleUpdateTask}>Edit Task</MenuItem>
+          </DialogContent>
+        </Dialog>
+      )}
+      
+      {/* Task Edit Dialog */}
+      {selectedTask && (
+        <TaskEditDialog
+          open={editDialogOpen}
+          onClose={handleCloseDialog}
+          task={selectedTask}
+          onSave={handleSaveTask}
+        />
+      )}
     </MainContainer>
   );
 };
