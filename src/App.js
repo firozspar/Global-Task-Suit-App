@@ -10,11 +10,11 @@ import { msalInstance } from "./authConfig";
 import Header from './components/Header';
 
 // Component to protect routes
-const ProtectedRoute = ({ element, ...rest }) => {
+const ProtectedRoute = ({ children }) => {
   const { accounts } = useMsal();
   const isAuthenticated = accounts.length > 0;
 
-  return isAuthenticated ? element : <Navigate to="/" />;
+  return isAuthenticated ? children : <Navigate to="/" replace />;
 };
 
 function App() {
@@ -25,33 +25,31 @@ function App() {
       <Provider store={store}> {/* Provide the Redux store */}
         <Router>
           <Routes>
+            {/* Public Route */}
             <Route path="/" element={<Login />} />
-            <Route
-              path="/dashboard"
+            
+            {/* Protected Routes */}
+            <Route 
+              path="/dashboard" 
               element={
-                <ProtectedRoute
-                  element={
-                    <>
-                      <Header setProfileName={setProfileName} />
-                      <Dashboard profileName={profileName} />
-                    </>
-                  }
-                />
-              }
+                <ProtectedRoute>
+                  <Header setProfileName={setProfileName} />
+                  <Dashboard profileName={profileName} />
+                </ProtectedRoute>
+              } 
             />
-            <Route
-              path="/createtask"
+            <Route 
+              path="/createtask" 
               element={
-                <ProtectedRoute
-                  element={
-                    <>
-                      <Header setProfileName={setProfileName} />
-                      <CreateTask profileName={profileName} />
-                    </>
-                  }
-                />
-              }
+                <ProtectedRoute>
+                  <Header setProfileName={setProfileName} />
+                  <CreateTask profileName={profileName} />
+                </ProtectedRoute>
+              } 
             />
+
+            {/* Catch-all Route for 404 Handling */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Router>
       </Provider>
