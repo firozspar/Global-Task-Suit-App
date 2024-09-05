@@ -68,7 +68,7 @@ const TaskEditDialog = ({ task, open, onClose, onSave }) => {
         setTimeout(() => {
           setOpenSuccess(false);
           onClose();
-          window.location.reload();
+          // window.location.reload();
         }, 1500);
       } else {
         throw new Error('Failed to update task');

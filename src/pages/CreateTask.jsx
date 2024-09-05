@@ -79,7 +79,7 @@ const CreateTask = () => {
         setTimeout(()=>{
           setOpenSuccess(false);
           navigate('/dashboard');
-          window.location.reload();
+          // window.location.reload();
         }, 1500);
       } else {
         throw new Error('Failed to create task');
