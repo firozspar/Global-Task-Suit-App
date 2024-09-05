@@ -15,5 +15,11 @@
         }
       }
     }
-  }
+  },
+  "routes": [
+    {
+      "route": "/*",
+      "rewrite": "/index.html"
+    }
+  ]
 }
