@@ -1,6 +1,6 @@
 import React from 'react';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
-import { Dashboard as DashboardIcon, Add as AddIcon, ExitToApp as LogoutIcon, AccountCircle as AzurePortalIcon } from '@mui/icons-material';
+import { Dashboard as DashboardIcon, Add as AddIcon, ExitToApp as LogoutIcon } from '@mui/icons-material';
 import { Link, useLocation } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { useMsal } from "@azure/msal-react";
@@ -18,6 +18,15 @@ const DrawerStyled = styled(Drawer)(({ theme = {} }) => ({
 
 const ToolbarStyled = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
+const LogoStyled = styled('img')(({ theme }) => ({
+  height: '130px', // Adjust height as needed
+  margin: theme.spacing(6),
+  marginTop: '60px'
 }));
 
 const ListItemStyled = styled(ListItem)(({ theme, active }) => ({
@@ -41,7 +50,13 @@ const LeftNavPanel = () => {
 
   return (
     <DrawerStyled variant="permanent">
-      <ToolbarStyled />
+      <ToolbarStyled>
+        <LogoStyled
+          src="https://appexchange.salesforce.com/partners/servlet/servlet.FileDownload?file=00P4V000012vyuhUAA"
+          alt="Logo"
+        />
+      </ToolbarStyled>
+      <div style={{marginTop:'-38px'}}>
       <List>
         <ListItemStyled
           component={Link}
@@ -65,12 +80,13 @@ const LeftNavPanel = () => {
         </ListItemStyled> */}
       </List>
       <Divider />
-      <List>
+      <List style={{marginTop:'250px'}}>
         <ListItemStyled button onClick={handleLogout}>
           <ListItemIcon><LogoutIcon /></ListItemIcon>
           <ListItemText primary="Log out" />
         </ListItemStyled>
       </List>
+      </div>
     </DrawerStyled>
   );
 };

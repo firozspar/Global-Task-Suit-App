@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useMsal } from '@azure/msal-react';
 import { Client } from '@microsoft/microsoft-graph-client';
 import { AppBar, Toolbar, IconButton, InputBase, Avatar, Typography, Box } from '@mui/material';
-import { Search as SearchIcon } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { setProfileName, setProfileImage } from '../features/profile/profileSlice';
 import { msalInstance, initializeMsal } from '../authConfig';
@@ -105,7 +104,6 @@ const Header = ({ searchQuery, handleSearchChange }) => {
             <Toolbar>
                 <Search>
                     <SearchIconWrapper>
-                        <SearchIcon />
                     </SearchIconWrapper>
                     <StyledInputBase
                         placeholder="Search…"
@@ -120,7 +118,7 @@ const Header = ({ searchQuery, handleSearchChange }) => {
                         {profileName}
                     </Typography>
                     <IconButton color="inherit">
-                    <a href="https://portal.azure.com" target="_blank" rel="noopener noreferrer">
+                    <a href="https://myaccount.microsoft.com/?ref=MeControl" target="_blank" rel="noopener noreferrer">
                         <Avatar
                             alt="Profile Picture"
                             src={'https://icons.veryicon.com/png/o/system/crm-android-app-icon/app-icon-person.png'}
